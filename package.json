@@ -1,0 +1,10 @@
+{
+  "name": "api-testing-automation-framework",
+  "version": "1.0.0",
+  "scripts": {
+    "newman": "newman run newman/collections/test-suite.json"
+  },
+  "devDependencies": {
+    "newman": "^6.1.0"
+  }
+}

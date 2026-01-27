@@ -1,0 +1,11 @@
+{
+  "name": "API Testing Environments",
+  "description": "Environment configurations for API Testing Framework",
+  "environments": {
+    "development": {
+      "baseUrl": "https://jsonplaceholder.typicode.com",
+      "timeout": 5000,
+      "retries": 3
+    }
+  }
+}

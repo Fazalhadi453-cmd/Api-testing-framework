@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Testing Automation Framework</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --darker: #0f172a;
+            --light: #f1f5f9;
+            --border: #475569;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--darker) 0%, #1a2332 100%);
+            color: var(--light);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--dark);
+            padding: 1.5rem 2rem;
+            border-bottom: 2px solid var(--primary);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            background: var(--dark);
+            padding: 0.5rem;
+            border-radius: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            color: #94a3b8;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        .tab-btn:hover {
+            background: var(--border);
+            color: var(--light);
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .card {
+            background: var(--dark);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .card-header {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #cbd5e1;
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            background: #334155;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--light);
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        textarea.form-control {
+            min-height: 100px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1e40af;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .test-item {
+            background: #334155;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 0.75rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .test-name {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .test-meta {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 0.5rem;
+        }
+
+        .test-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--dark);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .stat-card:nth-child(2) {
+            border-left-color: var(--success);
+        }
+
+        .stat-card:nth-child(3) {
+            border-left-color: var(--danger);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-success {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .status-error {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+
+        .status-method {
+            background: rgba(37, 99, 235, 0.2);
+            color: var(--primary);
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .results-table th {
+            background: #334155;
+            font-weight: 600;
+            color: #cbd5e1;
+        }
+
+        .results-table tr:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #94a3b8;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .spinner {
+            border: 3px solid #334155;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            .tabs {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>⚡ API Testing Automation Framework</h1>
+        <p>Professional API Testing Suite - Student: Fazal Hadi (CU-4301-2023)</p>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('builder')">Test Builder</button>
+            <button class="tab-btn" onclick="switchTab('tests')">My Tests</button>
+            <button class="tab-btn" onclick="switchTab('execute')">Execute</button>
+            <button class="tab-btn" onclick="switchTab('results')">Results</button>
+        </div>
+
+        <!-- TEST BUILDER -->
+        <div id="builder" class="tab-content active">
+            <div class="card">
+                <div class="card-header">Create New API Test</div>
+                <form id="testForm" onsubmit="saveTest(event)">
+                    <div class="form-group">
+                        <label>Test Name *</label>
+                        <input type="text" id="testName" class="form-control" placeholder="e.g., Get All Users" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>HTTP Method *</label>
+                        <select id="method" class="form-control" required>
+                            <option value="GET">GET</option>
+                            <option value="POST">POST</option>
+                            <option value="PUT">PUT</option>
+                            <option value="DELETE">DELETE</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>URL *</label>
+                        <input type="url" id="url" class="form-control" placeholder="https://jsonplaceholder.typicode.com/users" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Request Body (JSON - for POST/PUT)</label>
+                        <textarea id="body" class="form-control" placeholder='{"name": "value"}'></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Expected Status Code</label>
+                        <input type="number" id="expectedStatus" class="form-control" value="200">
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary">💾 Save Test</button>
+                        <button type="button" class="btn btn-danger" onclick="resetForm()">🔄 Reset</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- MY TESTS -->
+        <div id="tests" class="tab-content">
+            <div class="card">
+                <div class="card-header">Saved Test Cases</div>
+                <div id="testsList"></div>
+            </div>
+        </div>
+
+        <!-- EXECUTE -->
+        <div id="execute" class="tab-content">
+            <div class="card">
+                <div class="card-header">Execute Test Suite</div>
+                <div class="btn-group">
+                    <button class="btn btn-success" onclick="runAllTests()">▶️ Run All Tests</button>
+                </div>
+                <div id="executionStatus"></div>
+            </div>
+        </div>
+
+        <!-- RESULTS -->
+        <div id="results" class="tab-content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalTests">0</div>
+                    <div class="stat-label">Total Tests</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="passedTests">0</div>
+                    <div class="stat-label">Passed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="failedTests">0</div>
+                    <div class="stat-label">Failed</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Test Results</div>
+                <div id="resultsTable"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Export Reports</div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="exportResults()">📄 Export JSON</button>
+                    <button class="btn btn-danger" onclick="clearResults()">🗑️ Clear Results</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data storage
+        let tests = JSON.parse(localStorage.getItem('apiTests') || '[]');
+        let results = JSON.parse(localStorage.getItem('testResults') || '[]');
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tabName === 'tests') loadTests();
+            if (tabName === 'results') displayResults();
+        }
+
+        // Save test
+        function saveTest(e) {
+            e.preventDefault();
+            
+            const test = {
+                id: Date.now(),
+                name: document.getElementById('testName').value,
+                method: document.getElementById('method').value,
+                url: document.getElementById('url').value,
+                body: document.getElementById('body').value,
+                expectedStatus: parseInt(document.getElementById('expectedStatus').value),
+                created: new Date().toISOString()
+            };
+
+            tests.push(test);
+            localStorage.setItem('apiTests', JSON.stringify(tests));
+            
+            alert('✅ Test saved successfully!');
+            resetForm();
+            loadTests();
+        }
+
+        // Reset form
+        function resetForm() {
+            document.getElementById('testForm').reset();
+        }
+
+        // Load tests
+        function loadTests() {
+            const container = document.getElementById('testsList');
+            
+            if (tests.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><p>No tests yet. Create your first test!</p></div>';
+                return;
+            }
+
+            container.innerHTML = tests.map(test => `
+                <div class="test-item">
+                    <div class="test-name">${test.name}</div>
+                    <div class="test-meta">
+                        <span class="status-badge status-method">${test.method}</span>
+                        ${test.url}
+                    </div>
+                    <div class="test-actions">
+                        <button class="btn btn-success btn-small" onclick="runSingleTest(${test.id})">▶️ Run</button>
+                        <button class="btn btn-danger btn-small" onclick="deleteTest(${test.id})">🗑️ Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Delete test
+        function deleteTest(id) {
+            if (!confirm('Delete this test?')) return;
+            tests = tests.filter(t => t.id !== id);
+            localStorage.setItem('apiTests', JSON.stringify(tests));
+            loadTests();
+        }
+
+        // Run single test
+        async function runSingleTest(id) {
+            const test = tests.find(t => t.id === id);
+            if (!test) return;
+
+            const status = document.getElementById('executionStatus');
+            if (status) status.innerHTML = '<div class="spinner"></div>';
+
+            await executeTest(test);
+            
+            if (status) status.innerHTML = '<div class="alert alert-success">✅ Test completed! Check Results tab.</div>';
+            setTimeout(() => { if (status) status.innerHTML = ''; }, 3000);
+        }
+
+        // Run all tests
+        async function runAllTests() {
+            if (tests.length === 0) {
+                alert('No tests to run. Create some tests first!');
+                return;
+            }
+
+            const status = document.getElementById('executionStatus');
+            status.innerHTML = '<div class="spinner"></div><p style="text-align:center; margin-top:1rem;">Running tests...</p>';
+
+            results = [];
+            
+            for (const test of tests) {
+                await executeTest(test);
+            }
+
+            localStorage.setItem('testResults', JSON.stringify(results));
+            status.innerHTML = `<div class="alert alert-success">✅ Completed ${tests.length} test(s)! Check Results tab.</div>`;
+            
+            displayResults();
+        }
+
+        // Execute test
+        async function executeTest(test) {
+            const startTime = Date.now();
+            const result = {
+                testId: test.id,
+                testName: test.name,
+                method: test.method,
+                url: test.url,
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                const options = {
+                    method: test.method,
+                    headers: { 'Content-Type': 'application/json' }
+                };
+
+                if (test.body && (test.method === 'POST' || test.method === 'PUT')) {
+                    options.body = test.body;
+                }
+
+                const response = await fetch(test.url, options);
+                const data = await response.json();
+
+                result.status = response.status === test.expectedStatus ? 'PASS' : 'FAIL';
+                result.actualStatus = response.status;
+                result.expectedStatus = test.expectedStatus;
+                result.responseBody = data;
+                result.duration = Date.now() - startTime;
+
+            } catch (error) {
+                result.status = 'FAIL';
+                result.error = error.message;
+                result.duration = Date.now() - startTime;
+            }
+
+            results.push(result);
+            localStorage.setItem('testResults', JSON.stringify(results));
+        }
+
+        // Display results
+        function displayResults() {
+            const passed = results.filter(r => r.status === 'PASS').length;
+            const failed = results.filter(r => r.status === 'FAIL').length;
+
+            document.getElementById('totalTests').textContent = results.length;
+            document.getElementById('passedTests').textContent = passed;
+            document.getElementById('failedTests').textContent = failed;
+
+            const container = document.getElementById('resultsTable');
+
+            if (results.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-icon">📊</div><p>No results yet. Run some tests first!</p></div>';
+                return;
+            }
+
+            container.innerHTML = `
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Test Name</th>
+                            <th>Method</th>
+                            <th>Status</th>
+                            <th>Expected</th>
+                            <th>Actual</th>
+                            <th>Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${results.map(r => `
+                            <tr>
+                                <td>${r.testName}</td>
+                                <td><span class="status-badge status-method">${r.method}</span></td>
+                                <td><span class="status-badge ${r.status === 'PASS' ? 'status-success' : 'status-error'}">${r.status}</span></td>
+                                <td>${r.expectedStatus || '-'}</td>
+                                <td>${r.actualStatus || '-'}</td>
+                                <td>${r.duration}ms</td>
+                            </tr>
+                            ${r.error ? `
+                                <tr>
+                                    <td colspan="6" style="background: rgba(239, 68, 68, 0.1); color: var(--danger); padding: 0.5rem;">
+                                        Error: ${r.error}
+                                    </td>
+                                </tr>
+                            ` : ''}
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        // Export results
+        function exportResults() {
+            if (results.length === 0) {
+                alert('No results to export. Run some tests first!');
+                return;
+            }
+
+            const report = {
+                summary: {
+                    total: results.length,
+                    passed: results.filter(r => r.status === 'PASS').length,
+                    failed: results.filter(r => r.status === 'FAIL').length,
+                    generated: new Date().toISOString(),
+                    student: "Fazal Hadi (CU-4301-2023)",
+                    course: "Software Verification & Validation"
+                },
+                results: results
+            };
+
+            const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `test-report-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            alert('✅ Report exported successfully!');
+        }
+
+        // Clear results
+        function clearResults() {
+            if (!confirm('Clear all test results?')) return;
+            results = [];
+            localStorage.setItem('testResults', JSON.stringify(results));
+            displayResults();
+            alert('✅ Results cleared!');
+        }
+
+        // Load on startup
+        window.addEventListener('DOMContentLoaded', () => {
+            loadTests();
+            displayResults();
+        });
+    </script>
+</body>
+</html>
