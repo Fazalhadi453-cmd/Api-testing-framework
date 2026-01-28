@@ -2,9 +2,9 @@ name: API Testing Automation
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -26,7 +26,7 @@ jobs:
         run: npm ci
       
       - name: 🧪 Run API Tests
-        run: npm run newman
+        run: node newman/run-tests.js
       
       - name: 📊 Upload Test Reports
         if: always()
@@ -34,4 +34,5 @@ jobs:
         with:
           name: test-reports
           path: reports/*.html
+          if-no-files-found: ignore
           retention-days: 30
